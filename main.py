@@ -1,5 +1,43 @@
 from PyQt5.QtWidgets import QGridLayout, QWidget, QApplication, QLineEdit, QPushButton, QSizePolicy
+from PyQt5.QtGui import QFont
 import sys
+
+my_font = QFont('Cooper', 18)
+
+class Strechable_Button(QPushButton):
+    def __init__(self, text):
+        super().__init__(text)
+        self.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
+        self.setMinimumSize(40,40)
+        self.setFont(my_font)
+
+        self.setStyleSheet(''' 
+            QPushButton {
+                background-color: #797784;
+                color: #d6f1e4;
+                border: none;
+                border-radius: 15px;
+                padding: 10px;
+            }
+        ''')
+
+class Display(QLineEdit):
+    def __init__(self):
+        super().__init__()
+        self.setReadOnly(True)
+        self.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
+        self.setMinimumSize(40,40)
+        self.setFont(my_font)
+        self.setStyleSheet(''' 
+            QLineEdit {
+                background-color: #797784;
+                color: #d6f1e4;
+                border: 2px solid #d6f1e4;
+                border-radius: 15px;
+                padding: 10px;
+            }
+        ''')
+
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -7,30 +45,35 @@ class MainWindow(QWidget):
         self.setWindowTitle('Calculator')
         self.to_solve = ''
 
-        self.display = QLineEdit()
-        self.display.setReadOnly(True)
+        self.display = Display()
         
         layout = QGridLayout()
         self.setLayout(layout)
+        
+        self.setStyleSheet(''' 
+            QWidget {
+                background-color: #5b5364;
+            }
+        ''')
 
-        btn_1 = QPushButton('1')
-        btn_2 = QPushButton('2')
-        btn_3 = QPushButton('3')
-        btn_4 = QPushButton('4')
-        btn_5 = QPushButton('5')
-        btn_6 = QPushButton('6')
-        btn_7 = QPushButton('7')
-        btn_8 = QPushButton('8')
-        btn_9 = QPushButton('9')
-        btn_0 = QPushButton('0')
-        btn_back = QPushButton('<-')
-        btn_add = QPushButton('+')
-        btn_substruct = QPushButton('-')
-        btn_divide = QPushButton('%')
-        btn_multiply = QPushButton('*')
-        btn_clear = QPushButton('c')
-        btn_result = QPushButton('=')
-        btn_point = QPushButton('.')
+        btn_1 = Strechable_Button('1')
+        btn_2 = Strechable_Button('2')
+        btn_3 = Strechable_Button('3')
+        btn_4 = Strechable_Button('4')
+        btn_5 = Strechable_Button('5')
+        btn_6 = Strechable_Button('6')
+        btn_7 = Strechable_Button('7')
+        btn_8 = Strechable_Button('8')
+        btn_9 = Strechable_Button('9')
+        btn_0 = Strechable_Button('0')
+        btn_back = Strechable_Button('🠔')
+        btn_add = Strechable_Button('+')
+        btn_substruct = Strechable_Button('-')
+        btn_divide = Strechable_Button('/')
+        btn_multiply = Strechable_Button('*')
+        btn_clear = Strechable_Button('c')
+        btn_result = Strechable_Button('=')
+        btn_point = Strechable_Button('.')
 
         layout.addWidget(self.display, 0, 0, 1, 4)
 
@@ -75,7 +118,11 @@ class MainWindow(QWidget):
         btn_divide.clicked.connect(self.btn_handler)
         btn_point.clicked.connect(self.btn_handler)
         btn_result.clicked.connect(self.btn_handler)
+
     def btn_handler(self):
+        if self.to_solve == 'error':
+            self.to_solve = ''
+
         btn = self.sender()
         if btn.text() in '0123456789+-*%.':
             self.to_solve += btn.text()
@@ -84,7 +131,10 @@ class MainWindow(QWidget):
         if btn.text() == 'c':
             self.to_solve = ''
         if btn.text() == '=':
-            self.to_solve = str(eval(self.to_solve))
+            try:
+                self.to_solve = str(eval(self.to_solve))
+            except:
+                self.to_solve == 'error'
         self.display.setText(self.to_solve)
 
 app = QApplication(sys.argv)
